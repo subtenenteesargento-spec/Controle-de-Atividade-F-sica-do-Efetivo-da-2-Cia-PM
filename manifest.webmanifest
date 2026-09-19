@@ -1,0 +1,19 @@
+{
+  "name": "Controle de Atividade Física do Efetivo",
+  "short_name": "Atividade Física",
+  "description": "Ferramenta privada para controle administrativo de atividades físicas do efetivo.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f6f8",
+  "theme_color": "#12344d",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
