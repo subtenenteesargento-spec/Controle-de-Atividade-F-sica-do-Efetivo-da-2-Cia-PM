@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   "use strict";
 
   const root = document.getElementById("app");
@@ -213,7 +213,7 @@
     root.innerHTML =
       "<div class='app-shell'>" +
         "<header class='topbar'>" +
-          "<div class='topbar-brand'><div class='brand-mark'>AF</div><div><div class='topbar-title'>Controle de Atividade Física</div><div class='topbar-user'>" + esc(state.profile.nome) + " · RE " + esc(state.profile.re) + "</div></div></div>" +
+          "<div class='topbar-brand'><div class='brand-mark'>AF</div><div><div class='topbar-title'>Controle de Atividade Física</div><div class='topbar-user'>" + esc(state.profile.graduacao) + " " + esc(state.profile.nome) + " · RE " + esc(state.profile.re) + "</div></div></div>" +
           "<div class='topbar-actions'><span class='role-chip'>" + (isCommander() ? administrativeLabel(state.profile).toUpperCase() : "EFETIVO") + "</span><button class='btn btn-secondary btn-small icon-button' data-action='logout' aria-label='Sair' title='Sair'>↪</button></div>" +
         "</header>" +
         "<div class='layout'><aside class='sidebar'><nav class='nav-list' aria-label='Navegação principal'>" +
@@ -551,7 +551,7 @@
     return "<div class='table-wrap'><table><thead><tr><th>Data</th><th>Hora</th><th>RE</th><th>Graduação</th><th>Policial</th><th>Atividade</th><th>Duração</th><th>Status</th><th>Assinatura</th></tr></thead><tbody>" +
       rows.map(function (row) {
         const p = row.profiles || {};
-        const hasSignature = row.activity_signatures && row.activity_signatures.length;
+        const hasSignature = !!(row.activity_signatures && (Array.isArray(row.activity_signatures) ? row.activity_signatures.length : row.activity_signatures.signature_snapshot_path));
         return "<tr><td><button class='row-button' data-detail='" + row.id + "'>" + dateBR(row.data) + "</button></td>" +
           "<td>" + esc(row.hora_inicio.slice(0,5)) + "</td><td>" + esc(p.re) + "</td><td>" + esc(p.graduacao) + "</td><td>" + esc(p.nome) + "</td>" +
           "<td>" + esc(row.tipo_atividade) + "</td><td>" + minutesLabel(row.duracao_minutos) + "</td><td>" + statusBadge(row.status) + "</td><td>" + (hasSignature ? "Disponível" : "—") + "</td></tr>";
@@ -765,7 +765,7 @@
       row = result.data;
     }
     const p = row.profiles || state.profile;
-    const signatureRecord = row.activity_signatures && row.activity_signatures[0];
+    const signatureRecord = Array.isArray(row.activity_signatures) ? row.activity_signatures[0] : row.activity_signatures;
     let signature = "<div class='notice notice-warning'>Este registro ainda não possui assinatura.</div>";
     if (signatureRecord) {
       const url = await sb.storage.from("activity-signatures").createSignedUrl(signatureRecord.signature_snapshot_path, 300);
@@ -830,7 +830,7 @@
     toast("Preparando o PDF com as assinaturas…");
     const images = [];
     for (const row of signedRows) {
-      const sig = row.activity_signatures && row.activity_signatures[0];
+      const sig = Array.isArray(row.activity_signatures) ? row.activity_signatures[0] : row.activity_signatures;
       images.push(await signedImageData(sig && sig.signature_snapshot_path));
     }
     const jspdf = window.jspdf;
