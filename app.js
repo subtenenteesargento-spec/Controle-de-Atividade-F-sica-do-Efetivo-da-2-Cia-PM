@@ -146,7 +146,7 @@
       "<main class='login-shell'>" +
         "<section class='login-card'>" +
           "<div class='login-brand'>" +
-            "<div class='brand-mark'>AF</div>" +
+            "<div class='brand-mark brand-logo'><img src='./logo.png' alt='Atividade Física' /></div>" +
             "<div><h1>Controle de Atividade Física do Efetivo</h1><p>Acesso restrito</p></div>" +
           "</div>" +
           "<form id='login-form' class='stack'>" +
@@ -165,7 +165,7 @@
       "<main class='login-shell'>" +
         "<section class='login-card'>" +
           "<div class='login-brand'>" +
-            "<div class='brand-mark'>AF</div>" +
+            "<div class='brand-mark brand-logo'><img src='./logo.png' alt='Atividade Física' /></div>" +
             "<div><h1>Recuperar senha</h1><p>Receba um link seguro por e-mail</p></div>" +
           "</div>" +
           "<form id='recovery-request-form' class='stack'>" +
@@ -183,7 +183,7 @@
       "<main class='login-shell'>" +
         "<section class='login-card'>" +
           "<div class='login-brand'>" +
-            "<div class='brand-mark'>AF</div>" +
+            "<div class='brand-mark brand-logo'><img src='./logo.png' alt='Atividade Física' /></div>" +
             "<div><h1>Criar nova senha</h1><p>Escolha uma senha com pelo menos 8 caracteres</p></div>" +
           "</div>" +
           "<form id='reset-password-form' class='stack'>" +
@@ -200,7 +200,8 @@
       routeButton("inicio", "⌂", "Início") +
       routeButton("registrar", "＋", "Registrar") +
       routeButton("minhas-atividades", "◷", "Atividades") +
-      routeButton("assinatura", "✎", "Assinatura");
+      routeButton("assinatura", "✎", "Assinatura") +
+      routeButton("relatorios", "▤", "Meu relatório");
     const adminNav =
       routeButton("painel", "▦", "Painel") +
       routeButton("inicio", "⌂", "Minha área") +
@@ -213,12 +214,12 @@
     root.innerHTML =
       "<div class='app-shell'>" +
         "<header class='topbar'>" +
-          "<div class='topbar-brand'><div class='brand-mark'>AF</div><div><div class='topbar-title'>Controle de Atividade Física</div><div class='topbar-user'>" + esc(state.profile.graduacao) + " " + esc(state.profile.nome) + " · RE " + esc(state.profile.re) + "</div></div></div>" +
-          "<div class='topbar-actions'><span class='role-chip'>" + (isCommander() ? administrativeLabel(state.profile).toUpperCase() : "EFETIVO") + "</span><button class='btn btn-secondary btn-small icon-button' data-action='logout' aria-label='Sair' title='Sair'>↪</button></div>" +
+          "<div class='topbar-brand'><div class='brand-mark brand-logo'><img src='./logo.png' alt='Atividade Física' /></div><div><div class='topbar-title'>Controle de Atividade Física</div><div class='topbar-user'>" + esc(state.profile.graduacao) + " " + esc(state.profile.nome) + " · RE " + esc(state.profile.re) + "</div></div></div>" +
+          "<div class='topbar-actions'><button class='btn btn-secondary btn-small install-app-btn' data-action='install'>INSTALAR APP</button><span class='role-chip'>" + (isCommander() ? administrativeLabel(state.profile).toUpperCase() : "EFETIVO") + "</span><button class='btn btn-secondary btn-small icon-button' data-action='logout' aria-label='Sair' title='Sair'>↪</button></div>" +
         "</header>" +
         "<div class='layout'><aside class='sidebar'><nav class='nav-list' aria-label='Navegação principal'>" +
           (isCommander() ? adminNav : policeNav) +
-        "</nav></aside><main class='main'>" + content + "</main></div>" +
+        "</nav></aside><main class='main'>" + content + "<footer class='app-footer'>Criado por <strong>SUBTEN PM POZZER</strong></footer></main></div>" +
       "</div>";
   }
 
@@ -239,6 +240,7 @@
           "<button class='action-card' data-route='registrar'><span class='action-icon'>＋</span><strong>REGISTRAR ATIVIDADE</strong><span>Informe horário, tipo e local</span></button>" +
           "<button class='action-card' data-route='minhas-atividades'><span class='action-icon'>◷</span><strong>MINHAS ATIVIDADES</strong><span>Consulte seu histórico</span></button>" +
           "<button class='action-card' data-route='assinatura'><span class='action-icon'>✎</span><strong>MINHA ASSINATURA</strong><span>" + (hasSignature ? "Visualizar ou alterar" : "Cadastrar agora") + "</span></button>" +
+          "<button class='action-card' data-route='relatorios'><span class='action-icon'>▤</span><strong>MEU RELATÓRIO</strong><span>Consulte suas atividades por mês</span></button>" +
         "</div>" +
         "<section class='panel'><div class='panel-header'><h2>Orientação</h2></div><div class='panel-body'><p style='margin:0'>Cada registro recebe uma cópia da assinatura existente no momento da confirmação. Depois de assinado, o registro não poderá ser editado ou excluído por você.</p></div></section>" +
       "</section>";
@@ -739,16 +741,89 @@
     toast("Resultados copiados.", "success");
   }
 
+  function monthRange(value) {
+    const month = value || todayISO().slice(0, 7);
+    const parts = month.split("-").map(Number);
+    const year = parts[0];
+    const m = parts[1];
+    const start = year + "-" + String(m).padStart(2, "0") + "-01";
+    const last = new Date(year, m, 0).getDate();
+    const end = year + "-" + String(m).padStart(2, "0") + "-" + String(last).padStart(2, "0");
+    return { month: month, start: start, end: end };
+  }
+
+  function reportSummary(rows) {
+    const totalMinutes = rows.reduce(function (sum, row) { return sum + Number(row.duracao_minutos || 0); }, 0);
+    const signed = rows.filter(function (row) { return row.status === "ASSINADO"; }).length;
+    return "<div class='cards report-cards'>" +
+      metric("Atividades", rows.length) +
+      metric("Assinadas", signed) +
+      metric("Tempo total", minutesLabel(totalMinutes)) +
+    "</div>";
+  }
+
   async function renderReports(filters) {
-    if (!state.profiles.length) await loadProfiles();
-    const activeFilters = filters || { start: firstDayOfMonth(), end: todayISO() };
-    const rows = await loadAdminData(activeFilters);
+    const currentMonth = (filters && filters.month) || todayISO().slice(0, 7);
+    const range = monthRange(currentMonth);
+    let rows = [];
+    let selectedProfile = state.profile.id;
+
+    if (isCommander()) {
+      if (!state.profiles.length) await loadProfiles();
+      selectedProfile = (filters && filters.profile_id) || "";
+      rows = await loadAdminData({ start: range.start, end: range.end });
+      if (selectedProfile) {
+        rows = rows.filter(function (row) { return row.user_id === selectedProfile; });
+      }
+    } else {
+      const result = await sb.from("activities")
+        .select("*, activity_signatures(signature_snapshot_path,signature_hash)")
+        .eq("user_id", state.profile.id)
+        .gte("data", range.start)
+        .lte("data", range.end)
+        .order("data", { ascending: false })
+        .order("hora_inicio", { ascending: false });
+      if (result.error) throw result.error;
+      rows = dedupeActivities(result.data || []).map(function (row) {
+        row.profiles = {
+          id: state.profile.id,
+          re: state.profile.re,
+          nome: state.profile.nome,
+          graduacao: state.profile.graduacao,
+          unidade: state.profile.unidade
+        };
+        return row;
+      });
+    }
+
     state.reportRows = rows;
+
+    const profileOptions = isCommander()
+      ? "<option value=''>Todo o efetivo</option>" + state.profiles
+          .filter(function (p) { return p.ativo; })
+          .map(function (p) {
+            const selected = selectedProfile === p.id ? " selected" : "";
+            return "<option value='" + esc(p.id) + "'" + selected + ">" + esc(p.graduacao + " " + p.nome + " · RE " + p.re) + "</option>";
+          }).join("")
+      : "<option value='" + esc(state.profile.id) + "' selected>" + esc(state.profile.graduacao + " " + state.profile.nome + " · RE " + state.profile.re) + "</option>";
+
+    const reportFilter =
+      "<form id='monthly-report-filter' class='filters monthly-report-filters'>" +
+        "<div class='field'><label>Mês</label><input type='month' name='month' value='" + esc(currentMonth) + "' required /></div>" +
+        "<div class='field wide-report'><label>Policial Militar</label><select name='profile_id' " + (isCommander() ? "" : "disabled") + ">" + profileOptions + "</select></div>" +
+        "<div class='field'><label>&nbsp;</label><button class='btn btn-primary' type='submit'>CONSULTAR</button></div>" +
+      "</form>";
+
+    const subtitle = isCommander()
+      ? "Relatório mensal por policial militar."
+      : "Seu relatório mensal individual.";
+
     const html =
       "<section class='page'>" +
-        pageHeading("DOCUMENTOS", "Relatórios", "Selecione o período e exporte os registros.") +
-        "<section class='panel'>" + filterBar("report-filter", true) +
-          "<div class='panel-header'><h2>Prévia do relatório</h2><div class='button-row no-print'><button class='btn btn-secondary btn-small' data-action='export-csv'>EXPORTAR CSV</button><button class='btn btn-primary btn-small' data-action='generate-pdf'>GERAR PDF</button><button class='btn btn-secondary btn-small' data-action='print'>IMPRIMIR</button></div></div>" +
+        pageHeading("DOCUMENTOS", isCommander() ? "Relatórios mensais" : "Meu relatório mensal", subtitle) +
+        reportSummary(rows) +
+        "<section class='panel'>" + reportFilter +
+          "<div class='panel-header'><h2>Prévia do relatório · " + esc(currentMonth.split("-").reverse().join("/")) + "</h2><div class='button-row no-print'><button class='btn btn-secondary btn-small' data-action='export-csv'>EXPORTAR CSV</button><button class='btn btn-primary btn-small' data-action='generate-pdf'>GERAR PDF</button><button class='btn btn-secondary btn-small' data-action='print'>IMPRIMIR</button></div></div>" +
           adminTable(rows) +
         "</section>" +
       "</section>";
@@ -785,7 +860,7 @@
         (row.observacao ? "<div class='detail'><div class='detail-label'>Observação</div><div class='detail-value'>" + esc(row.observacao) + "</div></div>" : "") +
         "<div><h3>Assinatura utilizada</h3>" + signature + "</div>" +
       "</div></section>";
-    document.body.appendChild(modal);
+    root.appendChild(modal);
   }
 
   function detail(label, value) {
@@ -895,7 +970,7 @@
   async function navigate(route) {
     const allowed = isCommander()
       ? ["painel","inicio","registrar","minhas-atividades","assinatura","registros","efetivo","relatorios"]
-      : ["inicio","registrar","minhas-atividades","assinatura"];
+      : ["inicio","registrar","minhas-atividades","assinatura","relatorios"];
     state.route = allowed.includes(route) ? route : allowed[0];
     window.location.hash = state.route;
     try {
@@ -995,8 +1070,14 @@
       if (name === "export-csv") exportCSV();
       if (name === "generate-pdf") { setBusy(true); await generatePDF(); setBusy(false); }
       if (name === "print") window.print();
-      if (name === "install" && installPrompt) {
-        installPrompt.prompt(); await installPrompt.userChoice; installPrompt = null;
+      if (name === "install") {
+        if (installPrompt) {
+          installPrompt.prompt();
+          await installPrompt.userChoice;
+          installPrompt = null;
+        } else {
+          toast("Se o aplicativo já estiver instalado, abra pelo ícone. Caso contrário, use o menu do navegador e escolha Instalar aplicativo.", "success");
+        }
       }
     } catch (error) {
       setBusy(false);
@@ -1071,6 +1152,11 @@
       if (form.id === "records-filter") {
         const v = Object.fromEntries(new FormData(form));
         await renderRecords(v);
+      }
+      if (form.id === "monthly-report-filter") {
+        const v = Object.fromEntries(new FormData(form));
+        if (!isCommander()) v.profile_id = state.profile.id;
+        await renderReports(v);
       }
       if (form.id === "report-filter") {
         const v = Object.fromEntries(new FormData(form));

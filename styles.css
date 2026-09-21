@@ -237,3 +237,155 @@ tbody tr:hover { background: #f8fbfc; }
   .panel { border: 0; box-shadow: none; }
   body { background: #fff; }
 }
+
+
+/* ===== Visual inspirado no SISRURAL ===== */
+:root {
+  --navy: #0d3147;
+  --navy-2: #164a64;
+  --teal: #1d8f7b;
+  --teal-soft: #e7f5f1;
+  --canvas: #edf4f7;
+  --line: #d6e2e8;
+  --surface: rgba(255,255,255,.98);
+  --shadow: 0 14px 38px rgba(13,49,71,.10);
+}
+
+body {
+  background:
+    radial-gradient(circle at top right, rgba(29,143,123,.08), transparent 28rem),
+    linear-gradient(180deg, #f4f8fa 0, var(--canvas) 100%);
+}
+
+.brand-mark.brand-logo {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #dbe6ea;
+  padding: 3px;
+}
+.brand-mark.brand-logo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.login-shell {
+  background:
+    linear-gradient(135deg, rgba(13,49,71,.96), rgba(22,74,100,.90)),
+    radial-gradient(circle at 70% 20%, rgba(29,143,123,.4), transparent 28rem);
+}
+.login-card {
+  border: 0;
+  box-shadow: 0 26px 80px rgba(0,0,0,.22);
+}
+.login-brand .brand-mark { width: 74px; height: 74px; border-radius: 22px; }
+
+.topbar {
+  background: rgba(255,255,255,.97);
+  box-shadow: 0 3px 18px rgba(13,49,71,.05);
+}
+.topbar .brand-mark { width: 46px; height: 46px; border-radius: 14px; }
+.topbar-title { font-size: 1.02rem; color: var(--navy); }
+
+.sidebar {
+  background: linear-gradient(180deg, #0d3147 0%, #123d55 100%);
+  border-right: 0;
+  box-shadow: 8px 0 24px rgba(13,49,71,.08);
+}
+.nav-button { color: rgba(255,255,255,.78); }
+.nav-button:hover { background: rgba(255,255,255,.09); color: #fff; }
+.nav-button.active {
+  background: #fff;
+  color: var(--navy);
+  box-shadow: 0 9px 20px rgba(0,0,0,.10);
+}
+
+.panel, .metric, .action-card {
+  border-color: rgba(214,226,232,.9);
+  box-shadow: var(--shadow);
+}
+.action-card { position: relative; overflow: hidden; }
+.action-card::after {
+  content: "";
+  position: absolute;
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  right: -28px;
+  top: -30px;
+  background: rgba(29,143,123,.07);
+}
+.action-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(29,143,123,.45);
+}
+
+.metric {
+  border-top: 4px solid var(--teal);
+}
+.metric-value { color: var(--navy); }
+
+.btn-primary {
+  background: linear-gradient(135deg, #1d8f7b, #147362);
+  box-shadow: 0 8px 18px rgba(29,143,123,.18);
+}
+.btn-primary:hover { background: #116b5c; }
+
+.status-signed { background: #e0f4ea; color: #0c7248; }
+.status-pending { background: #fff0d4; color: #9b5e06; }
+
+.app-footer {
+  max-width: 1240px;
+  margin: 28px auto 8px;
+  padding: 18px 0 4px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: .76rem;
+  text-align: center;
+}
+.app-footer strong { color: var(--navy); letter-spacing: .035em; }
+
+.report-cards {
+  grid-template-columns: repeat(3, minmax(0,1fr));
+}
+.monthly-report-filters {
+  grid-template-columns: minmax(180px,.7fr) minmax(280px,1.8fr) minmax(150px,.5fr);
+}
+.monthly-report-filters .wide-report { min-width: 0; }
+
+.install-app-btn {
+  background: var(--teal-soft);
+  color: #0b665a;
+}
+.install-app-btn:hover { background: #d5eee8; }
+
+.modal-head .icon-button {
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+@media (display-mode: standalone) {
+  .install-app-btn { display: none; }
+}
+
+@media (max-width: 740px) {
+  .sidebar {
+    background: #0d3147;
+    box-shadow: 0 -6px 20px rgba(13,49,71,.13);
+  }
+  .nav-button { color: rgba(255,255,255,.78); }
+  .nav-button.active { background: #fff; color: var(--navy); }
+  .install-app-btn {
+    max-width: 92px;
+    padding: 7px 8px;
+    font-size: .66rem;
+  }
+  .report-cards { grid-template-columns: repeat(3,minmax(0,1fr)); }
+  .report-cards .metric { padding: 10px; }
+  .report-cards .metric-label { font-size: .63rem; }
+  .report-cards .metric-value { font-size: 1.15rem; }
+  .monthly-report-filters { grid-template-columns: 1fr; }
+  .app-footer { margin-bottom: 8px; }
+}

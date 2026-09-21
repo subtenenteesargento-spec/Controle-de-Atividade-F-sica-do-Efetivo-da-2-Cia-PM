@@ -1,5 +1,15 @@
-const CACHE = "caf-efetivo-v7";
-const APP_SHELL = ["./", "./index.html", "./styles.css", "./config.js", "./app.js", "./manifest.webmanifest", "./icon.svg"];
+const CACHE = "caf-efetivo-v9";
+const APP_SHELL = [
+  "./",
+  "./index.html",
+  "./styles.css",
+  "./config.js",
+  "./app.js",
+  "./manifest.webmanifest",
+  "./logo.png",
+  "./icon-192.png",
+  "./icon-512.png"
+];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(APP_SHELL)));
