@@ -551,7 +551,7 @@
     return "<div class='table-wrap'><table><thead><tr><th>Data</th><th>Hora</th><th>RE</th><th>Graduação</th><th>Policial</th><th>Atividade</th><th>Duração</th><th>Status</th><th>Assinatura</th></tr></thead><tbody>" +
       rows.map(function (row) {
         const p = row.profiles || {};
-        const hasSignature = !!(row.activity_signatures && (Array.isArray(row.activity_signatures) ? row.activity_signatures.length : row.activity_signatures.signature_snapshot_path));
+        const hasSignature = row.activity_signatures && row.activity_signatures.length;
         return "<tr><td><button class='row-button' data-detail='" + row.id + "'>" + dateBR(row.data) + "</button></td>" +
           "<td>" + esc(row.hora_inicio.slice(0,5)) + "</td><td>" + esc(p.re) + "</td><td>" + esc(p.graduacao) + "</td><td>" + esc(p.nome) + "</td>" +
           "<td>" + esc(row.tipo_atividade) + "</td><td>" + minutesLabel(row.duracao_minutos) + "</td><td>" + statusBadge(row.status) + "</td><td>" + (hasSignature ? "Disponível" : "—") + "</td></tr>";
@@ -765,7 +765,7 @@
       row = result.data;
     }
     const p = row.profiles || state.profile;
-    const signatureRecord = Array.isArray(row.activity_signatures) ? row.activity_signatures[0] : row.activity_signatures;
+    const signatureRecord = row.activity_signatures && row.activity_signatures[0];
     let signature = "<div class='notice notice-warning'>Este registro ainda não possui assinatura.</div>";
     if (signatureRecord) {
       const url = await sb.storage.from("activity-signatures").createSignedUrl(signatureRecord.signature_snapshot_path, 300);
@@ -794,13 +794,34 @@
 
   async function signedImageData(path) {
     if (!path) return null;
-    const downloaded = await sb.storage.from("activity-signatures").download(path);
-    if (downloaded.error) return null;
-    return await new Promise(function (resolve) {
-      const reader = new FileReader();
-      reader.onload = function () { resolve(reader.result); };
-      reader.readAsDataURL(downloaded.data);
-    });
+
+    const signed = await sb.storage
+      .from("activity-signatures")
+      .createSignedUrl(path, 300);
+
+    if (signed.error || !signed.data || !signed.data.signedUrl) {
+      return null;
+    }
+
+    try {
+      const response = await fetch(signed.data.signedUrl);
+      if (!response.ok) return null;
+
+      const blob = await response.blob();
+
+      return await new Promise(function (resolve) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          resolve(reader.result);
+        };
+        reader.onerror = function () {
+          resolve(null);
+        };
+        reader.readAsDataURL(blob);
+      });
+    } catch (_) {
+      return null;
+    }
   }
 
   async function generatePDF() {
@@ -809,7 +830,7 @@
     toast("Preparando o PDF com as assinaturas…");
     const images = [];
     for (const row of signedRows) {
-      const sig = Array.isArray(row.activity_signatures) ? row.activity_signatures[0] : row.activity_signatures;
+      const sig = row.activity_signatures && row.activity_signatures[0];
       images.push(await signedImageData(sig && sig.signature_snapshot_path));
     }
     const jspdf = window.jspdf;
