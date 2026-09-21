@@ -13,3 +13,9 @@ Ajustes desta versão:
 - Comandante/Administrador acessa os relatórios do efetivo.
 - Visual estilo SISRURAL e PWA instalável preservados.
 - Logo, rodapé e correções de assinatura preservados.
+
+Correções adicionais desta versão:
+- Corrigido o envio do perfil selecionado no cadastro.
+- Perfis suportados: comandante, administrador e policial.
+- Administrador e comandante mantêm acesso às telas administrativas e relatórios do efetivo.
+- Atualizado o cache da PWA para forçar carregamento da nova versão.

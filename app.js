@@ -107,12 +107,22 @@
   }
 
   function isCommander() {
-    return state.profile && state.profile.role === "comandante";
+    return state.profile &&
+      ["comandante", "administrador"].includes(
+        String(state.profile.role || "").trim().toLowerCase()
+      );
   }
 
   function administrativeLabel(profile) {
-    if (!profile || profile.role !== "comandante") return "Policial";
-    return /^Cap\b/i.test(String(profile.graduacao || "").trim()) ? "Comandante" : "Administrador";
+    if (!profile) return "Policial";
+    const role = String(profile.role || "").trim().toLowerCase();
+    if (role === "administrador") return "Administrador";
+    if (role === "comandante") {
+      return /^Cap\b/i.test(String(profile.graduacao || "").trim())
+        ? "Comandante"
+        : "Administrador";
+    }
+    return "Policial";
   }
 
   function statusBadge(status) {
@@ -674,7 +684,7 @@
         unidade: values.unidade.trim(),
         email: String(values.email || "").trim() || null,
         password: values.password,
-        role: values.role === "policial" ? "policial" : "comandante",
+        role: values.role,
         ativo: values.ativo !== false && values.ativo !== "false"
       }
     });
