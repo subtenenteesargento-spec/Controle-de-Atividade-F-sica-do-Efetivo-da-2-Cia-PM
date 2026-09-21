@@ -19,3 +19,13 @@ Correções adicionais desta versão:
 - Perfis suportados: comandante, administrador e policial.
 - Administrador e comandante mantêm acesso às telas administrativas e relatórios do efetivo.
 - Atualizado o cache da PWA para forçar carregamento da nova versão.
+
+
+VERSÃO V11 — 21/09/2026
+- Incluído BALÉ na lista de atividades.
+- Incluída confirmação explícita antes da assinatura.
+- Aviso em destaque de que, após assinar, o policial não poderá alterar nem excluir o registro.
+- Rodapé padronizado: CRIADO POR: SUBTEN PM 109139-5 POZZER.
+- Visual modernizado com marca d'água do símbolo, cartões refinados e novos detalhes visuais.
+- Cache da PWA atualizado para V11.
+- Incluído SQL para bloqueio definitivo de registros assinados no Supabase.

@@ -1,4 +1,4 @@
-const CACHE = "caf-efetivo-v10";
+const CACHE = "caf-efetivo-v11";
 const APP_SHELL = [
   "./",
   "./index.html",

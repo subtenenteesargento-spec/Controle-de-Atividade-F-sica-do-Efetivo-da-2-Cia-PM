@@ -33,7 +33,7 @@
 
   const activityTypes = [
     "Corrida", "Caminhada", "Musculação", "Treinamento funcional",
-    "Alongamento", "Bicicleta", "Futebol", "Outra"
+    "Alongamento", "Bicicleta", "Futebol", "Balé", "Outra"
   ];
 
   function esc(value) {
@@ -229,7 +229,7 @@
         "</header>" +
         "<div class='layout'><aside class='sidebar'><nav class='nav-list' aria-label='Navegação principal'>" +
           (isCommander() ? adminNav : policeNav) +
-        "</nav></aside><main class='main'>" + content + "<footer class='app-footer'>Criado por <strong>SUBTEN PM POZZER</strong></footer></main></div>" +
+        "</nav></aside><main class='main'>" + content + "<footer class='app-footer'><strong>CRIADO POR: SUBTEN PM 109139-5 POZZER</strong></footer></main></div>" +
       "</div>";
   }
 
@@ -246,13 +246,14 @@
         pageHeading("ÁREA DO POLICIAL", "Olá, " + state.profile.nome.split(" ")[0],
           hasSignature ? "Registre a atividade realizada durante o serviço." : "Cadastre sua assinatura antes do primeiro registro.") +
         (!hasSignature ? "<div class='notice notice-warning'>Sua assinatura ainda não foi cadastrada. Esse cadastro é necessário para assinar uma atividade.</div>" : "") +
+        "<div class='home-hero-quote'>Mais saúde,<br>mais desempenho<br>para servir.</div>" +
         "<div class='grid-actions'>" +
-          "<button class='action-card' data-route='registrar'><span class='action-icon'>＋</span><strong>REGISTRAR ATIVIDADE</strong><span>Informe horário, tipo e local</span></button>" +
-          "<button class='action-card' data-route='minhas-atividades'><span class='action-icon'>◷</span><strong>MINHAS ATIVIDADES</strong><span>Consulte seu histórico</span></button>" +
-          "<button class='action-card' data-route='assinatura'><span class='action-icon'>✎</span><strong>MINHA ASSINATURA</strong><span>" + (hasSignature ? "Visualizar ou alterar" : "Cadastrar agora") + "</span></button>" +
-          "<button class='action-card' data-route='relatorios'><span class='action-icon'>▤</span><strong>MEU RELATÓRIO</strong><span>Consulte suas atividades por mês</span></button>" +
+          "<button class='action-card action-card-green' data-route='registrar'><span class='action-icon'>＋</span><strong>REGISTRAR ATIVIDADE</strong><span>Informe horário, tipo e local</span><span class='action-arrow'>›</span></button>" +
+          "<button class='action-card action-card-blue' data-route='minhas-atividades'><span class='action-icon'>◷</span><strong>MINHAS ATIVIDADES</strong><span>Consulte seu histórico</span><span class='action-arrow'>›</span></button>" +
+          "<button class='action-card action-card-orange' data-route='assinatura'><span class='action-icon'>✎</span><strong>MINHA ASSINATURA</strong><span>" + (hasSignature ? "Visualizar ou alterar" : "Cadastrar agora") + "</span><span class='action-arrow'>›</span></button>" +
+          "<button class='action-card action-card-green' data-route='relatorios'><span class='action-icon'>▤</span><strong>MEU RELATÓRIO</strong><span>Consulte suas atividades por mês</span><span class='action-arrow'>›</span></button>" +
         "</div>" +
-        "<section class='panel'><div class='panel-header'><h2>Orientação</h2></div><div class='panel-body'><p style='margin:0'>Cada registro recebe uma cópia da assinatura existente no momento da confirmação. Depois de assinado, o registro não poderá ser editado ou excluído por você.</p></div></section>" +
+        "<section class='panel orientation-panel'><div class='panel-header'><h2>ⓘ &nbsp;Orientação</h2></div><div class='panel-body'><p style='margin:0'><strong>ATENÇÃO:</strong> cada registro recebe uma cópia da assinatura existente no momento da confirmação. <strong>Depois de assinado, o registro fica BLOQUEADO e não poderá ser editado nem excluído pelo policial militar.</strong></p></div></section>" +
       "</section>";
     renderShell(html);
   }
@@ -282,8 +283,8 @@
             "<div class='field'><label for='local'>Local</label><input id='local' name='local' required maxlength='160' placeholder='Informe o local' /></div>" +
             "<div class='field wide'><label for='observacao'>Observação</label><textarea id='observacao' name='observacao' maxlength='1000' placeholder='Opcional'></textarea></div>" +
           "</div>" +
-          "<div class='notice notice-info'>Ao confirmar, o sistema usará automaticamente sua assinatura cadastrada e guardará uma cópia permanente neste registro.</div>" +
-          "<div class='button-row'><button class='btn btn-primary' type='submit'>SALVAR E ASSINAR</button><button class='btn btn-secondary' type='button' data-route='inicio'>CANCELAR</button></div>" +
+          "<div class='notice notice-danger signing-warning'><strong>ATENÇÃO — ASSINATURA DEFINITIVA</strong><br>Confira cuidadosamente a data, os horários, a atividade e o local. Depois de assinado, este registro ficará <strong>BLOQUEADO</strong> e você <strong>NÃO PODERÁ ALTERAR NEM EXCLUIR</strong> as informações.</div>" +
+          "<div class='button-row'><button class='btn btn-primary' type='submit'>REVISAR E ASSINAR</button><button class='btn btn-secondary' type='button' data-route='inicio'>CANCELAR</button></div>" +
           "</div>" +
         "</form>" +
       "</section>";
@@ -305,6 +306,45 @@
     const end = document.getElementById("hora_fim").value;
     const duration = calculateDuration(start, end);
     document.getElementById("duration-display").textContent = duration > 0 ? minutesLabel(duration) : "0 min";
+  }
+
+  function confirmActivityBeforeSign(form) {
+    const data = Object.fromEntries(new FormData(form));
+    const duration = calculateDuration(data.hora_inicio, data.hora_fim);
+    return new Promise(function (resolve) {
+      const modal = document.createElement("div");
+      modal.id = "sign-confirm-modal";
+      modal.className = "modal-backdrop";
+      modal.innerHTML =
+        "<section class='modal sign-confirm-modal'>" +
+          "<div class='modal-head'><h2>ATENÇÃO — CONFIRMAÇÃO DEFINITIVA</h2></div>" +
+          "<div class='modal-body stack'>" +
+            "<div class='notice notice-danger signing-warning'><strong>CONFIRA TODOS OS DADOS ANTES DE ASSINAR.</strong><br>Após a assinatura, este registro ficará <strong>BLOQUEADO</strong>. O policial militar <strong>NÃO PODERÁ ALTERAR NEM EXCLUIR</strong> a data, os horários, a duração, a atividade ou o local.</div>" +
+            "<div class='detail-grid'>" +
+              detail("Data", dateBR(data.data)) +
+              detail("Início", data.hora_inicio) +
+              detail("Término", data.hora_fim) +
+              detail("Duração", minutesLabel(duration)) +
+              detail("Atividade", data.tipo_atividade) +
+              detail("Local", data.local) +
+            "</div>" +
+            "<div class='final-declaration'>Declaro que conferi os dados acima e confirmo que estão corretos.</div>" +
+            "<div class='button-row sign-confirm-actions'>" +
+              "<button class='btn btn-secondary' type='button' data-cancel-sign>VOLTAR E CORRIGIR</button>" +
+              "<button class='btn btn-primary' type='button' data-confirm-sign>CONFIRMAR E ASSINAR DEFINITIVAMENTE</button>" +
+            "</div>" +
+          "</div>" +
+        "</section>";
+      root.appendChild(modal);
+      modal.querySelector("[data-cancel-sign]").addEventListener("click", function () {
+        modal.remove();
+        resolve(false);
+      });
+      modal.querySelector("[data-confirm-sign]").addEventListener("click", function () {
+        modal.remove();
+        resolve(true);
+      });
+    });
   }
 
   async function saveAndSignActivity(form) {
@@ -1148,8 +1188,13 @@
         toast("Senha alterada com sucesso. Entre usando a nova senha.", "success");
       }
       if (form.id === "activity-form") {
+        const confirmed = await confirmActivityBeforeSign(form);
+        if (!confirmed) {
+          setBusy(false);
+          return;
+        }
         const id = await saveAndSignActivity(form);
-        toast("Atividade registrada e assinada.", "success");
+        toast("Atividade registrada, assinada e bloqueada para alterações.", "success");
         state.route = "minhas-atividades";
         await renderHistory("mes");
         await openDetail(id);
