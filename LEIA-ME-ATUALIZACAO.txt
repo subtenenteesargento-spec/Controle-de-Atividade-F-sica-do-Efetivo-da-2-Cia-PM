@@ -1,21 +1,15 @@
-CONTROLE DE ATIVIDADE FÍSICA DO EFETIVO — NOVA VERSÃO
+CONTROLE DE ATIVIDADE FÍSICA DO EFETIVO — VERSÃO ATUALIZADA
 
-Principais alterações:
-- Visual renovado inspirado no SISRURAL.
-- Logo enviado pelo usuário aplicado no app.
-- PWA com ícones 192x192 e 512x512.
-- Botão INSTALAR APP.
-- Rodapé: Criado por SUBTEN PM POZZER.
-- Policial comum acessa somente o próprio relatório mensal.
-- Comandante/Administrador acessa relatórios mensais de todo o efetivo ou por policial.
-- Relatório filtrado por mês.
-- Indicadores: atividades, assinadas e tempo total.
-- Correção do botão X da janela de detalhes.
-- Correções já existentes de assinatura preservadas.
-- Cache do service worker atualizado.
-
-Para publicar:
-Substitua no repositório os arquivos desta pasta e envie também:
-logo.png
-icon-192.png
-icon-512.png
+Ajustes desta versão:
+- Identificação padronizada: Graduação + RE + Nome.
+  Exemplo: Subten PM 109139-5 Luís Fernando Garcia Pozzer.
+- Cabeçalho, seletor de relatórios, efetivo e PDF ajustados para o mesmo padrão.
+- Cadastro em lote ajustado para o formato:
+  Graduação | RE | Nome completo | Perfil
+- Policial comum não se cadastra sozinho: o administrador cria o acesso.
+- Cadastro pode ser feito um por um ou em lote pelo menu Efetivo.
+- Cada policial recebe RE e senha provisória.
+- Policial comum acessa apenas o próprio relatório mensal.
+- Comandante/Administrador acessa os relatórios do efetivo.
+- Visual estilo SISRURAL e PWA instalável preservados.
+- Logo, rodapé e correções de assinatura preservados.

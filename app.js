@@ -214,7 +214,7 @@
     root.innerHTML =
       "<div class='app-shell'>" +
         "<header class='topbar'>" +
-          "<div class='topbar-brand'><div class='brand-mark brand-logo'><img src='./logo.png' alt='Atividade Física' /></div><div><div class='topbar-title'>Controle de Atividade Física</div><div class='topbar-user'>" + esc(state.profile.graduacao) + " " + esc(state.profile.nome) + " · RE " + esc(state.profile.re) + "</div></div></div>" +
+          "<div class='topbar-brand'><div class='brand-mark brand-logo'><img src='./logo.png' alt='Atividade Física' /></div><div><div class='topbar-title'>Controle de Atividade Física</div><div class='topbar-user'>" + esc(state.profile.graduacao) + " " + esc(state.profile.re) + " " + esc(state.profile.nome) + "</div></div></div>" +
           "<div class='topbar-actions'><button class='btn btn-secondary btn-small install-app-btn' data-action='install'>INSTALAR APP</button><span class='role-chip'>" + (isCommander() ? administrativeLabel(state.profile).toUpperCase() : "EFETIVO") + "</span><button class='btn btn-secondary btn-small icon-button' data-action='logout' aria-label='Sair' title='Sair'>↪</button></div>" +
         "</header>" +
         "<div class='layout'><aside class='sidebar'><nav class='nav-list' aria-label='Navegação principal'>" +
@@ -550,12 +550,12 @@
 
   function adminTable(rows) {
     if (!rows.length) return "<div class='empty'><strong>Nenhum registro encontrado</strong>Ajuste os filtros para consultar outro período.</div>";
-    return "<div class='table-wrap'><table><thead><tr><th>Data</th><th>Hora</th><th>RE</th><th>Graduação</th><th>Policial</th><th>Atividade</th><th>Duração</th><th>Status</th><th>Assinatura</th></tr></thead><tbody>" +
+    return "<div class='table-wrap'><table><thead><tr><th>Data</th><th>Hora</th><th>Graduação</th><th>RE</th><th>Policial</th><th>Atividade</th><th>Duração</th><th>Status</th><th>Assinatura</th></tr></thead><tbody>" +
       rows.map(function (row) {
         const p = row.profiles || {};
         const hasSignature = !!(row.activity_signatures && (Array.isArray(row.activity_signatures) ? row.activity_signatures.length : row.activity_signatures.signature_snapshot_path));
         return "<tr><td><button class='row-button' data-detail='" + row.id + "'>" + dateBR(row.data) + "</button></td>" +
-          "<td>" + esc(row.hora_inicio.slice(0,5)) + "</td><td>" + esc(p.re) + "</td><td>" + esc(p.graduacao) + "</td><td>" + esc(p.nome) + "</td>" +
+          "<td>" + esc(row.hora_inicio.slice(0,5)) + "</td><td>" + esc(p.graduacao) + "</td><td>" + esc(p.re) + "</td><td>" + esc(p.nome) + "</td>" +
           "<td>" + esc(row.tipo_atividade) + "</td><td>" + minutesLabel(row.duracao_minutos) + "</td><td>" + statusBadge(row.status) + "</td><td>" + (hasSignature ? "Disponível" : "—") + "</td></tr>";
       }).join("") + "</tbody></table></div>";
   }
@@ -582,7 +582,7 @@
         "<section class='panel' style='margin-bottom:18px'><div class='panel-header'><h2>Registros recentes</h2><button class='btn btn-secondary btn-small' data-route='registros'>VER TODOS</button></div>" + adminTable(recent) + "</section>" +
         "<section class='panel'><div class='panel-header'><h2>Sem atividade hoje</h2><span class='role-chip'>" + missing.length + " policiais</span></div><div class='panel-body'>" +
           (missing.length ? "<div class='activity-list'>" + missing.map(function (p) {
-            return "<div class='activity-item'><div class='activity-date'>RE " + esc(p.re) + "</div><div class='activity-info'><strong>" + esc(p.nome) + "</strong><span>" + esc(p.graduacao) + " · " + esc(p.unidade) + "</span></div><span class='status status-pending'>SEM REGISTRO</span></div>";
+            return "<div class='activity-item'><div class='activity-date'>" + esc(p.graduacao) + " " + esc(p.re) + "</div><div class='activity-info'><strong>" + esc(p.nome) + "</strong><span>" + esc(p.unidade) + "</span></div><span class='status status-pending'>SEM REGISTRO</span></div>";
           }).join("") + "</div>" : "<div class='empty'><strong>Todos os policiais ativos possuem registro hoje</strong></div>") +
         "</div></section>" +
       "</section>";
@@ -621,7 +621,7 @@
   async function renderPersonnel() {
     const profiles = await loadProfiles();
     const rows = profiles.map(function (p) {
-      return "<tr><td>" + esc(p.re) + "</td><td>" + esc(p.nome) + "</td><td>" + esc(p.graduacao) + "</td><td>" + esc(p.unidade) + "</td><td>" +
+      return "<tr><td>" + esc(p.graduacao) + "</td><td>" + esc(p.re) + "</td><td>" + esc(p.nome) + "</td><td>" + esc(p.unidade) + "</td><td>" +
         administrativeLabel(p) + "</td><td>" + (p.ativo ? "<span class='status status-signed'>ATIVO</span>" : "<span class='status status-pending'>INATIVO</span>") +
         "</td><td><button class='btn btn-secondary btn-small' data-action='toggle-profile' data-profile-id='" + p.id + "' data-current='" + p.ativo + "'>" + (p.ativo ? "INATIVAR" : "ATIVAR") + "</button></td></tr>";
     }).join("");
@@ -636,9 +636,9 @@
       "</div><div class='button-row'><button class='btn btn-primary' type='submit'>CADASTRAR USUÁRIO</button></div></form>";
     const batchForm =
       "<form id='batch-register-form' class='stack'>" +
-        "<div class='notice notice-info'>Cole uma pessoa por linha no formato: <strong>RE | Nome completo | Graduação | Perfil</strong>. Use policial, administrador ou comandante. O e-mail é opcional e não será exigido.</div>" +
+        "<div class='notice notice-info'>Cole uma pessoa por linha no formato: <strong>Graduação | RE | Nome completo | Perfil</strong>. Use policial, administrador ou comandante. O cadastro é feito pelo administrador e cada policial recebe RE e senha provisória.</div>" +
         "<div class='field'><label>Companhia/unidade para todos</label><input name='unidade' value='" + esc(state.profile.unidade || "") + "' required /></div>" +
-        "<div class='field'><label>Lista do efetivo</label><textarea name='people' class='batch-input' required placeholder='127861-4 | Daniel Ferreira Lopes | Cap PM | comandante&#10;980131-6 | João Pedro Scapin | Subten PM | administrador'></textarea><span class='help'>O sistema criará uma senha provisória diferente para cada pessoa.</span></div>" +
+        "<div class='field'><label>Lista do efetivo</label><textarea name='people' class='batch-input' required placeholder='Cap PM | 127861-4 | Daniel Ferreira Lopes | comandante&#10;Subten PM | 980131-6 | João Pedro Scapin | administrador'></textarea><span class='help'>O sistema criará uma senha provisória diferente para cada pessoa.</span></div>" +
         "<div class='button-row'><button class='btn btn-primary' type='submit'>CADASTRAR LISTA</button></div>" +
       "</form>";
     const batchResults = state.batchResults.length ?
@@ -653,7 +653,7 @@
     const html =
       "<section class='page'>" +
         pageHeading("ADMINISTRAÇÃO", "Efetivo", profiles.length + " usuário(s) cadastrado(s)", "<div class='button-row'><button class='btn btn-secondary' data-action='open-register-user'>CADASTRAR UM</button><button class='btn btn-primary' data-action='open-batch-register'>CADASTRAR EM LOTE</button></div>") +
-        "<section class='panel'><div class='table-wrap'><table><thead><tr><th>RE</th><th>Nome</th><th>Graduação</th><th>Unidade</th><th>Perfil</th><th>Situação</th><th>Ação</th></tr></thead><tbody>" + rows + "</tbody></table></div></section>" +
+        "<section class='panel'><div class='table-wrap'><table><thead><tr><th>Graduação</th><th>RE</th><th>Nome</th><th>Unidade</th><th>Perfil</th><th>Situação</th><th>Ação</th></tr></thead><tbody>" + rows + "</tbody></table></div></section>" +
         "<div id='user-modal' hidden><div class='modal-backdrop'><section class='modal'><div class='modal-head'><h2>Cadastrar usuário</h2><button class='btn btn-secondary btn-small icon-button' data-action='close-modal' aria-label='Fechar'>×</button></div><div class='modal-body'>" + registerForm + "</div></section></div></div>" +
         "<div id='batch-modal' " + (state.batchResults.length ? "" : "hidden") + "><div class='modal-backdrop'><section class='modal modal-wide'><div class='modal-head'><h2>Cadastro em lote</h2><button class='btn btn-secondary btn-small icon-button' data-action='close-batch-modal' aria-label='Fechar'>×</button></div><div class='modal-body stack'>" + (batchResults || batchForm) + "</div></section></div></div>" +
       "</section>";
@@ -711,7 +711,7 @@
     const role = roleText === "policial" || roleText === "efetivo" ? "policial" :
       roleText === "administrador" || roleText === "comandante" ? roleText : "";
     if (!role) throw new Error("Perfil inválido na linha " + (index + 1));
-    return { re: parts[0], nome: parts[1], graduacao: parts[2], unidade: unidade, role: role, ativo: true };
+    return { graduacao: parts[0], re: parts[1], nome: parts[2], unidade: unidade, role: role, ativo: true };
   }
 
   async function createUsersBatch(form) {
@@ -803,9 +803,9 @@
           .filter(function (p) { return p.ativo; })
           .map(function (p) {
             const selected = selectedProfile === p.id ? " selected" : "";
-            return "<option value='" + esc(p.id) + "'" + selected + ">" + esc(p.graduacao + " " + p.nome + " · RE " + p.re) + "</option>";
+            return "<option value='" + esc(p.id) + "'" + selected + ">" + esc(p.graduacao + " " + p.re + " " + p.nome) + "</option>";
           }).join("")
-      : "<option value='" + esc(state.profile.id) + "' selected>" + esc(state.profile.graduacao + " " + state.profile.nome + " · RE " + state.profile.re) + "</option>";
+      : "<option value='" + esc(state.profile.id) + "' selected>" + esc(state.profile.graduacao + " " + state.profile.re + " " + state.profile.nome) + "</option>";
 
     const reportFilter =
       "<form id='monthly-report-filter' class='filters monthly-report-filters'>" +
@@ -918,15 +918,15 @@
     doc.text("Documento de controle administrativo interno", 14, 26);
     const body = signedRows.map(function (row) {
       const p = row.profiles || {};
-      return [dateBR(row.data), row.hora_inicio.slice(0,5), p.re || "", p.graduacao || "", p.nome || "", row.tipo_atividade, minutesLabel(row.duracao_minutos), ""];
+      return [dateBR(row.data), row.hora_inicio.slice(0,5), p.graduacao || "", p.re || "", p.nome || "", row.tipo_atividade, minutesLabel(row.duracao_minutos), ""];
     });
     doc.autoTable({
       startY: 31,
-      head: [["Data","Hora","RE","Graduação","Nome","Atividade","Duração","Assinatura"]],
+      head: [["Data","Hora","Graduação","RE","Nome","Atividade","Duração","Assinatura"]],
       body: body,
       styles: { fontSize: 7.2, cellPadding: 2.2, minCellHeight: 16, valign: "middle" },
       headStyles: { fillColor: [18,52,77] },
-      columnStyles: { 3: { cellWidth: 25 }, 4: { cellWidth: 43 }, 5: { cellWidth: 34 }, 7: { cellWidth: 42 } },
+      columnStyles: { 2: { cellWidth: 25 }, 3: { cellWidth: 24 }, 4: { cellWidth: 43 }, 5: { cellWidth: 34 }, 7: { cellWidth: 42 } },
       didDrawCell: function (data) {
         if (data.section === "body" && data.column.index === 7 && images[data.row.index]) {
           try { doc.addImage(images[data.row.index], "PNG", data.cell.x + 2, data.cell.y + 2, data.cell.width - 4, data.cell.height - 4, undefined, "FAST"); } catch (_) {}
