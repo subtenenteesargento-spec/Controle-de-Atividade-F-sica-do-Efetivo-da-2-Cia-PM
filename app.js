@@ -13,10 +13,7 @@
     initialHashParams.get("type") === "recovery" ||
     initialSearchParams.get("type") === "recovery" ||
     Boolean(recoveryCode);
-  const configured =
-    /^https:\/\/.+\.supabase\.co$/.test(cfg.SUPABASE_URL || "") &&
-    cfg.SUPABASE_ANON_KEY &&
-    !cfg.SUPABASE_ANON_KEY.includes("COLE_AQUI");
+  const configured = !!(cfg.FIREBASE_CONFIG && cfg.FIREBASE_CONFIG.apiKey && cfg.FIREBASE_CONFIG.projectId);
 
   let sb = null;
   let installPrompt = null;
@@ -56,7 +53,11 @@
     const known = {
       "Invalid login credentials": "RE/e-mail ou senha incorretos.",
       "Email not confirmed": "O acesso ainda não foi confirmado.",
-      "Failed to fetch": "Não foi possível conectar. Verifique a internet."
+      "Failed to fetch": "Não foi possível conectar. Verifique a internet.",
+      "Firebase: Error (auth/invalid-credential).": "RE/e-mail ou senha incorretos.",
+      "Firebase: Error (auth/user-not-found).": "Usuário não encontrado.",
+      "Firebase: Error (auth/wrong-password).": "RE/e-mail ou senha incorretos.",
+      "Firebase: Error (auth/too-many-requests).": "Muitas tentativas. Aguarde alguns minutos e tente novamente."
     };
     return known[raw] || raw;
   }
@@ -143,9 +144,9 @@
         "<section class='panel'>" +
           "<div class='panel-header'><h2>Conectar o banco de dados</h2></div>" +
           "<div class='panel-body stack'>" +
-            "<div class='notice notice-warning'>O aplicativo está pronto, mas ainda precisa das duas chaves públicas do seu projeto Supabase.</div>" +
-            "<p>Abra o arquivo <span class='code'>dist/config.js</span> e preencha <span class='code'>SUPABASE_URL</span> e <span class='code'>SUPABASE_ANON_KEY</span>. A chave anon é pública por definição; a proteção dos dados é feita pelas políticas RLS incluídas no projeto.</p>" +
-            "<p class='help'>A chave service_role nunca deve ser colocada neste arquivo.</p>" +
+            "<div class='notice notice-warning'>O aplicativo ainda precisa da configuração pública do Firebase.</div>" +
+            "<p>Confira o arquivo <span class='code'>config.js</span> e a configuração do projeto Firebase.</p>" +
+            "<p class='help'>A proteção dos dados é aplicada pelas Regras do Cloud Firestore.</p>" +
           "</div>" +
         "</section>" +
       "</main>";

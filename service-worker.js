@@ -1,9 +1,10 @@
-const CACHE = "caf-efetivo-v11";
+const CACHE = "caf-efetivo-v12-firebase";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
   "./config.js",
+  "./firebase-adapter.js",
   "./app.js",
   "./manifest.webmanifest",
   "./logo.png",

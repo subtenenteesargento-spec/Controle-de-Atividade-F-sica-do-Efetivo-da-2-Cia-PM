@@ -1,31 +1,25 @@
-CONTROLE DE ATIVIDADE FÍSICA DO EFETIVO — VERSÃO ATUALIZADA
+CONTROLE DE ATIVIDADE FÍSICA DO EFETIVO — V12 FIREBASE
 
-Ajustes desta versão:
-- Identificação padronizada: Graduação + RE + Nome.
-  Exemplo: Subten PM 109139-5 Luís Fernando Garcia Pozzer.
-- Cabeçalho, seletor de relatórios, efetivo e PDF ajustados para o mesmo padrão.
-- Cadastro em lote ajustado para o formato:
-  Graduação | RE | Nome completo | Perfil
-- Policial comum não se cadastra sozinho: o administrador cria o acesso.
-- Cadastro pode ser feito um por um ou em lote pelo menu Efetivo.
-- Cada policial recebe RE e senha provisória.
-- Policial comum acessa apenas o próprio relatório mensal.
-- Comandante/Administrador acessa os relatórios do efetivo.
-- Visual estilo SISRURAL e PWA instalável preservados.
-- Logo, rodapé e correções de assinatura preservados.
+Esta versão foi migrada do Supabase para o Firebase/Cloud Firestore porque o domínio do Supabase estava sendo bloqueado na rede utilizada.
 
-Correções adicionais desta versão:
-- Corrigido o envio do perfil selecionado no cadastro.
-- Perfis suportados: comandante, administrador e policial.
-- Administrador e comandante mantêm acesso às telas administrativas e relatórios do efetivo.
-- Atualizado o cache da PWA para forçar carregamento da nova versão.
+Principais ajustes:
+- Firebase Authentication para login.
+- Cloud Firestore para usuários e atividades.
+- Configuração do projeto Firebase já inserida em config.js.
+- RE 109139-5 mapeado para ferpozzer@gmail.com para permitir login pelo RE ou pelo e-mail.
+- Documento de usuário esperado em usuarios/{UID}.
+- Atividades gravadas em atividades com userUid do policial autenticado.
+- Registro nasce como PENDENTE e é alterado para ASSINADO na confirmação definitiva.
+- Assinatura usada em cada atividade é copiada para o próprio registro antes da assinatura definitiva.
+- Registros ASSINADOS ficam bloqueados pelas Regras do Firestore já configuradas no projeto.
+- Balé mantido na lista de atividades.
+- Identificação no padrão Graduação + RE + Nome.
+- Rodapé: CRIADO POR: SUBTEN PM 109139-5 POZZER.
+- PWA e GitHub Pages preservados.
+- Cache atualizado para caf-efetivo-v12-firebase.
 
+IMPORTANTE SOBRE A ASSINATURA ATUAL:
+A assinatura pessoal usada como modelo fica salva no navegador/dispositivo. A cópia da assinatura usada em cada registro é armazenada no próprio documento da atividade no Firestore, tornando o registro assinado independente de alterações futuras na assinatura.
 
-VERSÃO V11 — 21/09/2026
-- Incluído BALÉ na lista de atividades.
-- Incluída confirmação explícita antes da assinatura.
-- Aviso em destaque de que, após assinar, o policial não poderá alterar nem excluir o registro.
-- Rodapé padronizado: CRIADO POR: SUBTEN PM 109139-5 POZZER.
-- Visual modernizado com marca d'água do símbolo, cartões refinados e novos detalhes visuais.
-- Cache da PWA atualizado para V11.
-- Incluído SQL para bloqueio definitivo de registros assinados no Supabase.
+CADASTRO DE NOVOS USUÁRIOS:
+O Administrador pode usar a tela Efetivo. Usuários sem e-mail recebem login interno baseado no RE. Usuários com e-mail usam o e-mail como login. Para o usuário 109139-5 foi incluído o mapeamento de RE para o e-mail já criado no Firebase Authentication.
