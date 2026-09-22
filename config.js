@@ -1,7 +1,7 @@
 window.APP_CONFIG = {
   APP_NAME: "Controle de Atividade Física do Efetivo",
   FIREBASE_CONFIG: {
-    apiKey: "AIzaSyDV7IET0HAwVfCcGEEvciFJoTpQEeDiro4",
+    apiKey: "AIzaSyB0IgssaI6Bn4TAreTRKUQSB8mp6vr_TRo",
     authDomain: "controle-de-atividade-fisica.firebaseapp.com",
     projectId: "controle-de-atividade-fisica",
     storageBucket: "controle-de-atividade-fisica.firebasestorage.app",
